@@ -1,0 +1,656 @@
+{
+	"info": {
+		"_postman_id": "65abbf9d-84c4-4594-be88-c3f633202c94",
+		"name": "Online Shop",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37951889"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Andrés",
+									"type": "text"
+								},
+								{
+									"key": "surname",
+									"value": "Coloma",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "andcol",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "andres@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "12345Ac-00",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "12346578",
+									"type": "text"
+								},
+								{
+									"key": "role",
+									"value": "CLIENT",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3616/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3616",
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = JSON.parse(responseBody);\r",
+									"postman.setGlobalVariable(\"token\", data.token)"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "userLoggin",
+									"value": "Pearma",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "12345Pa-01",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3616/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3616",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{toke}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3616/v1/user/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3616",
+							"path": [
+								"v1",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get one user",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3616/v1/user/67af72a14b17a91afe16d3a5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3616",
+							"path": [
+								"v1",
+								"user",
+								"67af72a14b17a91afe16d3a5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update user",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Diego",
+									"type": "text"
+								},
+								{
+									"key": "surname",
+									"value": "Escalante",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "diego@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "12345Ac-01",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "12345678",
+									"type": "text"
+								},
+								{
+									"key": "role",
+									"value": "CLIENT",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3616/v1/user/67af72d84b17a91afe16d3aa",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3616",
+							"path": [
+								"v1",
+								"user",
+								"67af72d84b17a91afe16d3aa"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "dele user",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3616/v1/user/67af72fd4b17a91afe16d3af",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3616",
+							"path": [
+								"v1",
+								"user",
+								"67af72fd4b17a91afe16d3af"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Category",
+			"item": [
+				{
+					"name": "Category create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Domesticos",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Objetos del hogar comunes",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3616/v1/category/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3616",
+							"path": [
+								"v1",
+								"category",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all category",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3616/v1/category/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3616",
+							"path": [
+								"v1",
+								"category",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get one category",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3616/v1/category/67af74b9d4354a1da7164b6e",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3616",
+							"path": [
+								"v1",
+								"category",
+								"67af74b9d4354a1da7164b6e"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Sports",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Section with various items for exercises and sports",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3616/v1/category/67af7493d4354a1da7164b69",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3616",
+							"path": [
+								"v1",
+								"category",
+								"67af7493d4354a1da7164b69"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete category",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "http://localhost:3616/v1/category/67af60731c637ea7cc53e8df",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3616",
+							"path": [
+								"v1",
+								"category",
+								"67af60731c637ea7cc53e8df"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Product",
+			"item": [
+				{
+					"name": "Create product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Switch 2",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Está ni sale aún, pero equis",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "3900",
+									"type": "text"
+								},
+								{
+									"key": "stock",
+									"value": "289",
+									"type": "text"
+								},
+								{
+									"key": "category",
+									"value": "67af74b9d4354a1da7164b6e",
+									"type": "text"
+								},
+								{
+									"key": "bestSelller",
+									"value": "true",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3616/v1/product/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3616",
+							"path": [
+								"v1",
+								"product",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3616/v1/product/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3616",
+							"path": [
+								"v1",
+								"product",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get one prodcut",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3616/v1/product/67af779ad4354a1da7164bd0",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3616",
+							"path": [
+								"v1",
+								"product",
+								"67af779ad4354a1da7164bd0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "The Last of Us II",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Juego de infectados, supervivencia y drama... supongo",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "79.99",
+									"type": "text"
+								},
+								{
+									"key": "stock",
+									"value": "250",
+									"type": "text"
+								},
+								{
+									"key": "category",
+									"value": "67af74b9d4354a1da7164b6e",
+									"type": "text"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3616/v1/product/67af777ed4354a1da7164bc9",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3616",
+							"path": [
+								"v1",
+								"product",
+								"67af777ed4354a1da7164bc9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete product",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3616/v1/product/67af7811d4354a1da7164bde",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3616",
+							"path": [
+								"v1",
+								"product",
+								"67af7811d4354a1da7164bde"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
