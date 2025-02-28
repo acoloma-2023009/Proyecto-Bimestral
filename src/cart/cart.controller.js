@@ -8,10 +8,22 @@ export const createCart = async (req, res) => {
             return res.status(400).send({ success: false, message: "Cart already exists" });
         }
 
-        const newCart = new Cart({ user: req.user._id, products: [] });
-        await newCart.save();
+        const { products } = req.body;
+        if (!Array.isArray(products) || products.length === 0) {
+            return res.status(400).send({ success: false, message: "Invalid products data" });
+        }
 
-        return res.status(201).send({ success: true, message: "Cart created successfully", cart: newCart });
+        const newCart = new Cart({
+            user: req.user._id,
+            products
+        });
+
+        await newCart.save();
+        return res.status(201).send({
+            success: true,
+            message: "Cart created successfully",
+            cart: newCart
+        });
     } catch (err) {
         console.error(err);
         return res.status(500).send({ success: false, message: "Internal server error" });
@@ -63,18 +75,44 @@ export const updateCart = async (req, res) => {
     }
 };
 
-export const deleteCart = async (req, res) => {
+export const deleteCartItem = async (req, res) => {
     try {
-        const cart = await Cart.findOneAndDelete({ user: req.user._id });
+        const cart = await Cart.findOne({ user: req.user._id });
         if (!cart) {
-            return res.status(404).send({ success: false, message: "Cart not found" });
+            return res.status(404).send({ success: false, message: "Cart not found" })
         }
-        return res.send({ success: true, message: "Cart deleted successfully" });
+        const { productId } = req.body
+        if (!productId) {
+            return res.status(400).send({ success: false, message: "Product ID is required" })
+        }
+        cart.products = cart.products.filter(item => item.product.toString() !== productId)
+        await cart.save()
+        return res.send({ success: true, message: "Product removed from cart successfully", cart })
     } catch (err) {
-        console.error(err);
-        return res.status(500).send({ success: false, message: "Internal server error" });
+        console.error(err)
+        return res.status(500).send({ success: false, message: "Internal server error" })
     }
-};
+}
+
+export const clearCart = async (req, res) => {
+    try {
+        const { cartId } = req.params
+        if (!cartId) {
+            return res.status(400).send({ success: false, message: "Cart ID is required" })
+        }
+        const cart = await Cart.findById(cartId);
+        if (!cart) {
+            return res.status(404).send({ success: false, message: "Cart not found" })
+        }
+        cart.products = [];
+        await cart.save();
+
+        return res.send({ success: true, message: "Cart has been cleared successfully", cart })
+    } catch (err) {
+        console.error(err)
+        return res.status(500).send({ success: false, message: "Internal server error" })
+    }
+}
 
 export const getAllCarts = async (req, res) => {
     try {

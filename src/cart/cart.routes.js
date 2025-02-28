@@ -3,55 +3,61 @@ import {
     createCart,
     getCart,
     updateCart,
-    deleteCart,
-    getAllCarts
+    getAllCarts,
+    deleteCartItem,
+    clearCart
 } from "./cart.controller.js";
-import { validateJwt, isAdmin } from "../../middlewares/validate.jwt.js";
-import { isCartOwner } from "../../middlewares/validate.jwt.js";
-import { cartValidator } from "../../helpers/validators.js";
+import { isAdmin, isCartOwner, validateJwt } from "../../middlewares/validate.jwt.js"
+import { cartValidator } from "../../helpers/validators.js"
 
-const api = Router();
+const router = Router();
 
-api.post("/", 
+router.post("/", 
     [
-        validateJwt, 
-        isCartOwner,
-        cartValidator
+        validateJwt,
+        cartValidator,
+        isCartOwner
     ], 
     createCart
-)
+);
 
-api.get("/", 
+router.get("/", 
     [
         validateJwt, 
         isCartOwner
     ], 
     getCart
-)
+);
 
-api.put("/", 
+router.put("/", 
     [
         validateJwt,
-        isCartOwner,
-        cartValidator
+        cartValidator,
+        isCartOwner
     ], 
     updateCart
-)
+);
 
-api.delete("/", 
+router.delete("/", 
     [
         validateJwt,
         isCartOwner
     ], 
-    deleteCart
-)
-
-api.get("/all", 
+    deleteCartItem
+);
+router.delete("/clear/:cartId", 
+    [
+        validateJwt,
+        isCartOwner
+    ], 
+    clearCart
+);
+router.get("/all", 
     [
         validateJwt,
         isAdmin
     ], 
     getAllCarts
-    )
+);
 
-export default api;
+export default router;

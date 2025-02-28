@@ -13,6 +13,14 @@ const api = Router()
 
 //Rutas públicas
 api.post(
+    '/register', 
+    [
+        registerValidator,
+        deleteFileOnError
+    ], 
+    registerClient
+)
+api.post(
     '/registerAdmin', 
     [
         registerValidator,
@@ -21,15 +29,6 @@ api.post(
         deleteFileOnError
     ], 
     registerAdmin
-)
-
-api.post(
-    '/register', 
-    [
-        registerValidator,
-        deleteFileOnError
-    ], 
-    registerClient
 )
 api.post(
     '/login', 

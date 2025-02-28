@@ -5,8 +5,7 @@ const CartSchema = new Schema(
         user: {
             type: Schema.Types.ObjectId,
             ref: "User",
-            required: true,
-            unique: true
+            required: true
         },
         products: [
             {
@@ -18,14 +17,10 @@ const CartSchema = new Schema(
                 quantity: {
                     type: Number,
                     required: true,
-                    min: [1, "Quantity must be at least 1"]
+                    min: 1
                 }
             }
-        ],
-        status: {
-            type: Boolean,
-            default: true,
-        },
+        ]
     },
     {
         timestamps: true

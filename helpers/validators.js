@@ -91,11 +91,10 @@ export const categoryValidator = [
 ];
 
 export const cartValidator = [
-    body("products", "Products must be an array").isArray(), // Verifica que 'products' sea un array válido,
-    body("products.*.product", "Product ID is required").notEmpty(), // Verifica que cada producto en la lista tenga un ID válido,
-    body("products.*.quantity", "Quantity must be a positive integer")
-        .notEmpty()
-        .isInt({ min: 1 }), // Asegura que cada producto tenga una cantidad válida (mínimo 1),
+    body("products").isArray({ min: 1 }).withMessage("Products must be a non-empty array"), // Asegura que es un array con al menos un producto
+    body("products.*.product").isMongoId().withMessage("Invalid product ID"), // Verifica que cada ID de producto sea válido
+    body("products.*.quantity")
+        .isInt({ min: 1 }).withMessage("Quantity must be a positive integer"), // Asegura que cada cantidad sea al menos 1
     validateError
 ];
 
