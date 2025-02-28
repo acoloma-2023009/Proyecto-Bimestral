@@ -1,10 +1,11 @@
 import { Router } from 'express'
 import { 
     login,
-    register,
+    registerAdmin,
+    registerClient,
     test
  } from './auth.controller.js'
-import { validateJwt } from '../../middlewares/validate.jwt.js'
+import { isAdmin, validateJwt } from '../../middlewares/validate.jwt.js'
 import { loginValidator, registerValidator } from '../../helpers/validators.js'
 import { deleteFileOnError } from '../../middlewares/delete.file.on.error.js'
 
@@ -12,12 +13,23 @@ const api = Router()
 
 //Rutas públicas
 api.post(
+    '/registerAdmin', 
+    [
+        registerValidator,
+        validateJwt,
+        isAdmin,
+        deleteFileOnError
+    ], 
+    registerAdmin
+)
+
+api.post(
     '/register', 
     [
         registerValidator,
         deleteFileOnError
     ], 
-    register
+    registerClient
 )
 api.post(
     '/login', 

@@ -49,24 +49,20 @@ export const get = async (req, res) => {
     }
 }
 
-
 export const update = async (req, res) => {
     try {
         const { id } = req.params;
         let { password, user, role, ...data } = req.body; 
+    
         if (!isValidObjectId(id)) {
             return res.status(400).send({ success: false, message: "Invalid ID" })
-        }
-        const requestingUser = await User.findById(req.userId); 
-        if (!requestingUser) {
-            return res.status(401).send({ success: false, message: "Unauthorized" })
         }
         const userToUpdate = await User.findById(id);
         if (!userToUpdate) {
             return res.status(404).send({ success: false, message: "User not found" })
         }
-        if (requestingUser.role === "ADMIN" && userToUpdate.role === "ADMIN") {
-            return res.status(403).send({ success: false, message: "Admins cannot update other admins" })
+        if (userToUpdate.role === "ADMIN") {
+            return res.status(403).send({ success: false, message: "Cannot modify an admin user" })
         }
         if (password || user) {
             return res.status(400).send({ success: false, message: "Cannot update password or username" })
@@ -80,15 +76,16 @@ export const update = async (req, res) => {
             message: "User updated successfully",
             updatedUser
         })
+
     } catch (err) {
         console.error(err);
         return res.status(500).send({
             success: false,
             message: "General error",
             err
-        })
+        });
     }
-}
+};
 
 
 export const remove = async (req, res) => {

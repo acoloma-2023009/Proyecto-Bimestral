@@ -1,0 +1,87 @@
+import Cart from "./cart.model.js";
+import Product from "../product/product.model.js";
+
+export const createCart = async (req, res) => {
+    try {
+        const existingCart = await Cart.findOne({ user: req.user._id });
+        if (existingCart) {
+            return res.status(400).send({ success: false, message: "Cart already exists" });
+        }
+
+        const newCart = new Cart({ user: req.user._id, products: [] });
+        await newCart.save();
+
+        return res.status(201).send({ success: true, message: "Cart created successfully", cart: newCart });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send({ success: false, message: "Internal server error" });
+    }
+};
+
+export const getCart = async (req, res) => {
+    try {
+        const cart = await Cart.findOne({ user: req.user._id }).populate("products.product", "name price stock");
+        if (!cart) {
+            return res.status(404).send({ success: false, message: "Cart not found" });
+        }
+        return res.send({ success: true, message: "Cart retrieved successfully", cart });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send({ success: false, message: "Internal server error" });
+    }
+};
+
+export const updateCart = async (req, res) => {
+    try {
+        const cart = await Cart.findOne({ user: req.user._id });
+        if (!cart) {
+            return res.status(404).send({ success: false, message: "Cart not found" });
+        }
+
+        const { products } = req.body;
+        if (!Array.isArray(products)) {
+            return res.status(400).send({ success: false, message: "Invalid products format" });
+        }
+
+        for (const item of products) {
+            const product = await Product.findById(item.product);
+            if (!product) {
+                return res.status(400).send({ success: false, message: `Product with ID ${item.product} not found` });
+            }
+            if (item.quantity > product.stock) {
+                return res.status(400).send({ success: false, message: `Not enough stock for ${product.name}` });
+            }
+        }
+
+        cart.products = products;
+        await cart.save();
+
+        return res.send({ success: true, message: "Cart updated successfully", cart });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send({ success: false, message: "Internal server error" });
+    }
+};
+
+export const deleteCart = async (req, res) => {
+    try {
+        const cart = await Cart.findOneAndDelete({ user: req.user._id });
+        if (!cart) {
+            return res.status(404).send({ success: false, message: "Cart not found" });
+        }
+        return res.send({ success: true, message: "Cart deleted successfully" });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send({ success: false, message: "Internal server error" });
+    }
+};
+
+export const getAllCarts = async (req, res) => {
+    try {
+        const carts = await Cart.find().populate("user", "username email").populate("products.product", "name price stock");
+        return res.send({ success: true, message: "Carts retrieved successfully", carts });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send({ success: false, message: "Internal server error" });
+    }
+};

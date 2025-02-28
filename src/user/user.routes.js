@@ -5,7 +5,7 @@ import {
     remove, 
     update
 } from './user.controller.js'
-import { isAdmin, validateJwt } from '../../middlewares/validate.jwt.js'
+import { isAdmin, validateJwt, validateUserOwnership } from '../../middlewares/validate.jwt.js'
 
 const api = Router()
 
@@ -30,7 +30,7 @@ api.put(
     '/:id',
     [
         validateJwt,
-        isAdmin
+        validateUserOwnership
     ],
     update
 )
@@ -39,7 +39,7 @@ api.delete(
     '/:id',
     [
         validateJwt,
-        isAdmin
+        validateUserOwnership
     ],
     remove
 )

@@ -89,3 +89,20 @@ export const categoryValidator = [
         .isBoolean(),
     validateError
 ];
+
+export const cartValidator = [
+    body("products", "Products must be an array").isArray(), // Verifica que 'products' sea un array válido,
+    body("products.*.product", "Product ID is required").notEmpty(), // Verifica que cada producto en la lista tenga un ID válido,
+    body("products.*.quantity", "Quantity must be a positive integer")
+        .notEmpty()
+        .isInt({ min: 1 }), // Asegura que cada producto tenga una cantidad válida (mínimo 1),
+    validateError
+];
+
+export const billValidator = [
+    body("cartId", "Cart ID is required").notEmpty(),
+    body("discount", "Discount must be a non-negative number")
+        .optional()
+        .isFloat({ min: 0 }),
+    validateError
+];
