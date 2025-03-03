@@ -1,28 +1,41 @@
 import Bill from "./bill.model.js"
 import Cart from "../cart/cart.model.js"
-import Product from '../product/product.model.js'
+import Product from "../product/product.model.js"
 
 export const createBill = async (req, res) => {
     try {
         const { cartId, discount = 0 } = req.body;
         const cart = await Cart.findById(cartId).populate("products.product")
         if (!cart) {
-            return res.status(404).send({ success: false, message: "Cart not found" })
+            return res.status(404).send({ success: false, message: "Cart not found" });
         }
         const existingBill = await Bill.findOne({ cart: cartId })
         if (existingBill) {
             return res.status(400).send({ success: false, message: "Bill already exists for this cart" })
         }
-        let subtotal = 0;
-        const products = cart.products.map(item => {
-            subtotal += item.quantity * item.product.price
-            return {
-                product: item.product._id,
-                quantity: item.quantity,
-                price: item.product.price
+        let subtotal = 0
+        const products = []
+        for (const item of cart.products) {
+            const product = await Product.findById(item.product._id)
+            if (!product) {
+                return res.status(404).send({ success: false, message: `Product not found: ${item.product._id}` })
             }
-        })
-        const total = subtotal - discount;
+            if (product.stock < item.quantity) {
+                return res.status(400).send({ 
+                    success: false, 
+                    message: `Insufficient stock for ${product.name}. Available: ${product.stock}` 
+                })
+            }
+            product.stock -= item.quantity
+            await product.save()
+            subtotal += item.quantity * product.price
+            products.push({
+                product: product._id,
+                quantity: item.quantity,
+                price: product.price
+            })
+        }
+        const total = subtotal - discount
         if (total < 0) {
             return res.status(400).send({ success: false, message: "Discount cannot exceed subtotal" })
         }
@@ -33,19 +46,18 @@ export const createBill = async (req, res) => {
             subtotal,
             discount,
             total
-        });
+        })
         await newBill.save();
-        
         return res.status(201).send({ success: true, message: "Bill created successfully", bill: newBill })
     } catch (err) {
-        console.error(err);
+        console.error(err)
         return res.status(500).send({ success: false, message: "Internal server error" })
     }
-};
+}
 
 export const getBill = async (req, res) => {
     try {
-        const { id } = req.params
+        const { id } = req.params;
         const bill = await Bill.findById(id).populate("user", "username email").populate("products.product", "name price")
         if (!bill) {
             return res.status(404).send({ success: false, message: "Bill not found" })

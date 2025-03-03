@@ -1,16 +1,27 @@
-import Cart from "./cart.model.js";
-import Product from "../product/product.model.js";
+import Cart from "./cart.model.js"
+import Product from "../product/product.model.js"
 
 export const createCart = async (req, res) => {
     try {
         const existingCart = await Cart.findOne({ user: req.user._id });
         if (existingCart) {
-            return res.status(400).send({ success: false, message: "Cart already exists" });
+            return res.status(400).send({ success: false, message: "Cart already exists" })
         }
-
-        const { products } = req.body;
+        const { products } = req.body
         if (!Array.isArray(products) || products.length === 0) {
             return res.status(400).send({ success: false, message: "Invalid products data" });
+        }
+        for (const item of products) {
+            const product = await Product.findById(item.product)
+            if (!product) {
+                return res.status(404).send({ success: false, message: `Product not found: ${item.product}` });
+            }
+            if (product.stock < item.quantity) {
+                return res.status(400).send({ 
+                    success: false, 
+                    message: `Insufficient stock for ${product.name}. Available: ${product.stock}` 
+                })
+            }
         }
 
         const newCart = new Cart({
@@ -18,17 +29,53 @@ export const createCart = async (req, res) => {
             products
         });
 
-        await newCart.save();
+        await newCart.save()
         return res.status(201).send({
             success: true,
             message: "Cart created successfully",
             cart: newCart
         });
     } catch (err) {
-        console.error(err);
-        return res.status(500).send({ success: false, message: "Internal server error" });
+        console.error(err)
+        return res.status(500).send({ success: false, message: "Internal server error" })
     }
-};
+}
+
+export const updateCart = async (req, res) => {
+    try {
+        const cart = await Cart.findOne({ user: req.user._id })
+        if (!cart) {
+            return res.status(404).send({ success: false, message: "Cart not found" })
+        }
+        const { products } = req.body;
+        if (!Array.isArray(products)) {
+            return res.status(400).send({ success: false, message: "Invalid products format" })
+        }
+        for (const item of products) {
+            const product = await Product.findById(item.product);
+            if (!product) {
+                return res.status(404).send({ success: false, message: `Product not found: ${item.product}` });
+            }
+            if (product.stock < item.quantity) {
+                return res.status(400).send({ 
+                    success: false, 
+                    message: `Insufficient stock for ${product.name}. Available: ${product.stock}` 
+                })
+            }
+            const existingProductIndex = cart.products.findIndex(p => p.product.toString() === item.product)
+            if (existingProductIndex !== -1) {
+                cart.products[existingProductIndex].quantity += item.quantity
+            } else {
+                cart.products.push(item);
+            }
+        }
+        await cart.save();
+        return res.send({ success: true, message: "Cart updated successfully", cart })
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send({ success: false, message: "Internal server error" })
+    }
+}
 
 export const getCart = async (req, res) => {
     try {
@@ -37,38 +84,6 @@ export const getCart = async (req, res) => {
             return res.status(404).send({ success: false, message: "Cart not found" });
         }
         return res.send({ success: true, message: "Cart retrieved successfully", cart });
-    } catch (err) {
-        console.error(err);
-        return res.status(500).send({ success: false, message: "Internal server error" });
-    }
-};
-
-export const updateCart = async (req, res) => {
-    try {
-        const cart = await Cart.findOne({ user: req.user._id });
-        if (!cart) {
-            return res.status(404).send({ success: false, message: "Cart not found" });
-        }
-
-        const { products } = req.body;
-        if (!Array.isArray(products)) {
-            return res.status(400).send({ success: false, message: "Invalid products format" });
-        }
-
-        for (const item of products) {
-            const product = await Product.findById(item.product);
-            if (!product) {
-                return res.status(400).send({ success: false, message: `Product with ID ${item.product} not found` });
-            }
-            if (item.quantity > product.stock) {
-                return res.status(400).send({ success: false, message: `Not enough stock for ${product.name}` });
-            }
-        }
-
-        cart.products = products;
-        await cart.save();
-
-        return res.send({ success: true, message: "Cart updated successfully", cart });
     } catch (err) {
         console.error(err);
         return res.status(500).send({ success: false, message: "Internal server error" });
